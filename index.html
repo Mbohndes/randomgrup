@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengacak Kelompok Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Animasi untuk kartu hasil */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-600 text-transparent bg-clip-text">Pengacak Kelompok Pro</h1>
+            <p class="text-gray-400 mt-2 text-lg">Buat kelompok secara adil dengan aturan khusus.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Panel Kontrol -->
+            <div class="lg:col-span-1 bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700">
+                <h2 class="text-2xl font-bold mb-6 text-cyan-400 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0L7.86 6.83H4.3c-1.66 0-2.61 1.88-1.78 3.3L4.76 14.5a2.5 2.5 0 002.1 1.5h6.27a2.5 2.5 0 002.1-1.5l2.24-4.37c.83-1.42-.12-3.3-1.78-3.3h-3.56l-.65-3.66zM16 18a1 1 0 100-2 1 1 0 000 2zM6 18a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                    </svg>
+                    Pengaturan
+                </h2>
+                
+                <!-- Input Nama -->
+                <div class="mb-4">
+                    <label for="names" class="block text-sm font-medium text-gray-300 mb-2">Daftar Nama (satu per baris)</label>
+                    <textarea id="names" rows="10" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200" placeholder="Asep&#10;Budi&#10;Cici&#10;Dodi&#10;Euis"></textarea>
+                </div>
+
+                <!-- Input Jumlah Kelompok -->
+                <div class="mb-4">
+                    <label for="groupCount" class="block text-sm font-medium text-gray-300 mb-2">Jumlah Kelompok</label>
+                    <input type="number" id="groupCount" value="2" min="1" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200">
+                </div>
+
+                <!-- Filter Khusus -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-200">Filter Khusus (Opsional)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label for="mustBeTogether" class="block text-sm font-medium text-gray-400 mb-1">Harus Bersama (pisahkan dengan koma)</label>
+                            <input type="text" id="mustBeTogether" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200" placeholder="Contoh: Budi, Dodi">
+                        </div>
+                        <div>
+                            <label for="mustBeSeparate" class="block text-sm font-medium text-gray-400 mb-1">Harus Terpisah (pisahkan dengan koma)</label>
+                            <input type="text" id="mustBeSeparate" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200" placeholder="Contoh: Asep, Euis">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="generateBtn" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 16v-2m0-10v10m0 0h10M2 12h10m0 0h10M6 12H4m16 0h-2m-5 5v2m0-16v2m0 10V6m0 0H6m10 0h2M6 6h2m10 10h2m-16 0h2" />
+                        </svg>
+                        Acak Sekarang!
+                    </button>
+                    <button id="resetBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5" />
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9a9 9 0 0114.2-4.2L20 4M20 15a9 9 0 01-14.2 4.2L4 20" />
+                        </svg>
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Area Hasil -->
+            <div class="lg:col-span-2">
+                <div id="results-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Kartu hasil akan muncul di sini -->
+                     <div id="placeholder" class="md:col-span-2 text-center text-gray-500 p-10 border-2 border-dashed border-gray-700 rounded-2xl flex flex-col items-center justify-center h-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-5M3 4h5v5M12 4v16M4 12h16"/>
+                        </svg>
+                        <h3 class="text-xl font-medium">Hasil Pengacakan Akan Muncul di Sini</h3>
+                        <p class="mt-1">Isi data di panel pengaturan dan klik "Acak Sekarang!".</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal untuk Notifikasi/Error -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-gray-800 rounded-2xl shadow-xl max-w-sm w-full border border-yellow-500">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="bg-yellow-500 p-2 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="text-xl font-bold text-yellow-400">Peringatan</h3>
+                        <p id="modal-message" class="text-gray-300 mt-1">Pesan error akan muncul di sini.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-700 px-6 py-3 text-right rounded-b-2xl">
+                 <button id="modal-close" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Elemen DOM ---
+        const namesTextarea = document.getElementById('names');
+        const groupCountInput = document.getElementById('groupCount');
+        const mustBeTogetherInput = document.getElementById('mustBeTogether');
+        const mustBeSeparateInput = document.getElementById('mustBeSeparate');
+        const generateBtn = document.getElementById('generateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultsContainer = document.getElementById('results-container');
+        const placeholder = document.getElementById('placeholder');
+        
+        // --- Elemen Modal ---
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close');
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', handleGeneration);
+        resetBtn.addEventListener('click', resetAll);
+        modalCloseBtn.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        /**
+         * Fungsi untuk menampilkan modal error/notifikasi.
+         * @param {string} title - Judul modal.
+         * @param {string} message - Pesan yang akan ditampilkan.
+         */
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.innerHTML = message; // Gunakan innerHTML untuk render list
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * Fungsi untuk mengacak urutan elemen dalam sebuah array (Fisher-Yates shuffle).
+         * @param {Array} array - Array yang akan diacak.
+         * @returns {Array} - Array dengan urutan elemen yang sudah diacak.
+         */
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        /**
+         * Fungsi utama untuk menangani proses pembuatan grup.
+         */
+        function handleGeneration() {
+            // 1. Mengambil dan membersihkan input
+            const allNames = namesTextarea.value.split('\n')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+
+            const groupCount = parseInt(groupCountInput.value, 10);
+
+            const togetherNames = mustBeTogetherInput.value.split(',')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+                
+            const separateNames = mustBeSeparateInput.value.split(',')
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+            
+            // 2. Validasi Input
+            let errors = [];
+            if (allNames.length === 0) {
+                errors.push("Daftar nama tidak boleh kosong.");
+            }
+            if (isNaN(groupCount) || groupCount <= 0) {
+                errors.push("Jumlah kelompok harus angka positif.");
+            }
+            if (allNames.length < groupCount) {
+                errors.push("Jumlah nama lebih sedikit dari jumlah kelompok.");
+            }
+            if (separateNames.length > groupCount) {
+                errors.push("Jumlah orang yang harus dipisah melebihi jumlah kelompok.");
+            }
+            const nameSet = new Set(allNames);
+            [...togetherNames, ...separateNames].forEach(name => {
+                if (!nameSet.has(name)) {
+                    errors.push(`Nama "${name}" di filter khusus tidak ada di daftar utama.`);
+                }
+            });
+            const conflict = togetherNames.find(name => separateNames.includes(name));
+            if (conflict) {
+                errors.push(`Nama "${conflict}" tidak bisa berada di aturan 'bersama' dan 'terpisah' sekaligus.`);
+            }
+
+            if (errors.length > 0) {
+                const errorMessage = `<ul>${errors.map(e => `<li class='list-disc list-inside'>${e}</li>`).join('')}</ul>`;
+                showModal('Input Tidak Valid', errorMessage);
+                return;
+            }
+
+            // 3. Logika Pengelompokan
+            generateGroups(allNames, groupCount, togetherNames, separateNames);
+        }
+
+        /**
+         * Logika inti untuk membuat dan mendistribusikan grup.
+         * @param {string[]} allNames - Semua nama yang akan dikelompokkan.
+         * @param {number} groupCount - Jumlah kelompok yang diinginkan.
+         * @param {string[]} togetherNames - Nama-nama yang harus bersama.
+         * @param {string[]} separateNames - Nama-nama yang harus terpisah.
+         */
+        function generateGroups(allNames, groupCount, togetherNames, separateNames) {
+            let groups = Array.from({ length: groupCount }, () => []);
+            let namesToShuffle = [...allNames];
+
+            // Prioritas 1: Pisahkan nama-nama dari daftar utama untuk penanganan khusus
+            const togetherUnit = togetherNames;
+            namesToShuffle = namesToShuffle.filter(name => !togetherNames.includes(name));
+            namesToShuffle = namesToShuffle.filter(name => !separateNames.includes(name));
+
+            // Prioritas 2: Tempatkan nama yang harus terpisah terlebih dahulu
+            shuffleArray(separateNames);
+            separateNames.forEach((name, index) => {
+                groups[index % groupCount].push(name);
+            });
+
+            // Prioritas 3: Gabungkan nama yang harus bersama dan tempatkan sebagai satu unit
+            let remainingNames = [ ...namesToShuffle ];
+            if (togetherUnit.length > 0) {
+                remainingNames.push(togetherUnit); // Masukkan sebagai array/unit
+            }
+            
+            // Acak sisa nama (termasuk unit 'bersama')
+            shuffleArray(remainingNames);
+
+            // Prioritas 4: Distribusikan sisa nama ke kelompok yang paling kosong
+            remainingNames.forEach(item => {
+                // Urutkan kelompok berdasarkan jumlah anggota terkecil
+                groups.sort((a, b) => a.length - b.length);
+                // Tambahkan item (bisa string, bisa array) ke kelompok terkecil
+                if (Array.isArray(item)) { // Jika ini adalah unit 'bersama'
+                    groups[0].push(...item);
+                } else {
+                    groups[0].push(item);
+                }
+            });
+            
+            displayResults(groups);
+        }
+
+        /**
+         * Menampilkan hasil pengelompokan di UI.
+         * @param {Array<string[]>} groups - Array berisi kelompok-kelompok yang sudah jadi.
+         */
+        function displayResults(groups) {
+            resultsContainer.innerHTML = ''; // Hapus hasil lama atau placeholder
+            
+            groups.forEach((group, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-700 opacity-0';
+                card.style.animationDelay = `${index * 100}ms`;
+
+                let membersHtml = '';
+                if (group.length > 0) {
+                    membersHtml = group.map(name => 
+                        `<li class="bg-gray-700 py-2 px-3 rounded-md text-gray-200">${name}</li>`
+                    ).join('');
+                } else {
+                    membersHtml = `<li class="text-gray-500 italic">Tidak ada anggota</li>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-cyan-400">Kelompok ${index + 1}</h3>
+                        <span class="bg-cyan-500 text-white text-xs font-semibold px-3 py-1 rounded-full">${group.length} Orang</span>
+                    </div>
+                    <ul class="space-y-2">
+                        ${membersHtml}
+                    </ul>
+                `;
+                
+                resultsContainer.appendChild(card);
+                // Memicu animasi setelah elemen ditambahkan ke DOM
+                setTimeout(() => {
+                    card.classList.add('animate-fade-in');
+                }, 10);
+            });
+        }
+        
+        /**
+         * Mereset semua input dan hasil ke kondisi awal.
+         */
+        function resetAll() {
+            namesTextarea.value = '';
+            groupCountInput.value = '2';
+            mustBeTogetherInput.value = '';
+            mustBeSeparateInput.value = '';
+            resultsContainer.innerHTML = '';
+            resultsContainer.appendChild(placeholder);
+        }
+
+    </script>
+</body>
+</html>
